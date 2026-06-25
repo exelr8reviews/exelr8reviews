@@ -226,7 +226,7 @@ errorMsg.style.display = 'none';
 const rawPhone = phoneInput.value.replace(/\D/g, '');
 const formattedPhone = '+1' + rawPhone;
 try {
-const res = await fetch('/.netlify/functions/send-sms', {
+const res = await fetch('https://lively-math-4da7.exelr8reviews.workers.dev/', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ phone: formattedPhone }),
