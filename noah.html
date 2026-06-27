@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Customer | Star Quality A/C</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f4f6fb;
+      color: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(74,14,143,0.10);
+      max-width: 420px;
+      width: 100%;
+      padding: 36px 28px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: #4A0E8F;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg { width: 20px; height: 20px; fill: #fff; }
+    .logo-text { font-size: 1rem; font-weight: 700; color: #4A0E8F; }
+    h1 { font-size: 1.3rem; font-weight: 700; color: #4A0E8F; margin-bottom: 6px; }
+    .subtitle { font-size: 0.9rem; color: #666; margin-bottom: 24px; }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #D6EEFF;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: #1a1a2e;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+      background: #f9fbff;
+    }
+    input:focus { border-color: #4A0E8F; background: #fff; }
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: #4A0E8F;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #3a0b72; }
+    .btn:disabled { background: #b3a0cc; cursor: not-allowed; }
+    .error { color: red; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; }
+    .success { display: none; text-align: center; padding: 16px 0; }
+    .success .check { font-size: 2.5rem; margin-bottom: 10px; }
+    .success h2 { color: #4A0E8F; font-size: 1.2rem; margin-bottom: 6px; }
+    .success p { color: #666; font-size: 0.9rem; }
+    .success .another { margin-top: 16px; background: transparent; color: #4A0E8F; border: 2px solid #4A0E8F; border-radius: 10px; padding: 10px; width: 100%; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+    #login-section input { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      </div>
+      <span class="logo-text">Exelr8Reviews</span>
+    </div>
+
+    <!-- Login Section -->
+    <div id="login-section">
+      <h1>Staff Login</h1>
+      <p class="subtitle">Star Quality A/C — Enter your password to submit a customer.</p>
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password" />
+      <button class="btn" onclick="handleLogin()">Login</button>
+      <p class="error" id="login-error">Incorrect password. Please try again.</p>
+    </div>
+
+    <!-- Submit Section -->
+    <div id="submit-section" style="display:none;">
+      <h1>Send Review Request</h1>
+      <p class="subtitle">Enter the customer's details to send them a Google review link via SMS.</p>
+      <label for="name">Customer First Name</label>
+      <input type="text" id="name" placeholder="e.g. John" />
+      <label for="phone">Customer Phone Number</label>
+      <input type="tel" id="phone" placeholder="(772) 000-0000" />
+      <button class="btn" id="submit-btn" onclick="handleSubmit()">Send Review Request</button>
+      <p class="error" id="submit-error">Something went wrong. Please try again.</p>
+    </div>
+
+    <!-- Success Section -->
+    <div class="success" id="success-section">
+      <div class="check">✅</div>
+      <h2>Review request sent!</h2>
+      <p id="success-name"></p>
+      <button class="another" onclick="handleAnother()">Send another</button>
+    </div>
+  </div>
+
+  <script>
+    const PASSWORD = 'Reviews';
+
+    function handleLogin() {
+      const pwd = document.getElementById('password').value;
+      if (pwd === PASSWORD) {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('submit-section').style.display = 'block';
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    document.getElementById('password').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function () {
+      let val = this.value.replace(/\D/g, '').slice(0, 10);
+      if (val.length >= 7) val = '(' + val.slice(0,3) + ') ' + val.slice(3,6) + '-' + val.slice(6);
+      else if (val.length >= 4) val = '(' + val.slice(0,3) + ') ' + val.slice(3);
+      else if (val.length > 0) val = '(' + val;
+      this.value = val;
+    });
+
+    async function handleSubmit() {
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.replace(/\D/g, '');
+      const errorEl = document.getElementById('submit-error');
+      errorEl.style.display = 'none';
+
+      if (!name || phone.length < 10) {
+        errorEl.textContent = 'Please enter a valid name and phone number.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('https://lively-math-4da7.exelr8reviews.workers.dev/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: '+1' + phone, name: name }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('submit-section').style.display = 'none';
+          document.getElementById('success-name').textContent = 'Review request sent to ' + name + '!';
+          document.getElementById('success-section').style.display = 'block';
+        } else {
+          errorEl.textContent = 'Error: ' + (data.error || 'Please try again.');
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Send Review Request';
+        }
+      } catch (err) {
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send Review Request';
+      }
+    }
+
+    function handleAnother() {
+      document.getElementById('name').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('success-section').style.display = 'none';
+      document.getElementById('submit-section').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
