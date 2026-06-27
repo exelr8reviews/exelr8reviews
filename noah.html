@@ -204,3 +204,75 @@
   </script>
 </body>
 </html>
+<script>
+const PASSWORD = 'Reviews';
+
+function handleLogin() {
+const pwd = document.getElementById('password').value;
+if (pwd === PASSWORD) {
+document.getElementById('login-section').style.display = 'none';
+document.getElementById('submit-section').style.display = 'block';
+} else {
+document.getElementById('login-error').style.display = 'block';
+}
+}
+
+document.getElementById('password').addEventListener('keydown', function(e) {
+if (e.key === 'Enter') handleLogin();
+});
+
+const phoneInput = document.getElementById('phone');
+phoneInput.addEventListener('input', function () {
+let val = this.value.replace(/\D/g, '').slice(0, 10);
+if (val.length >= 7) val = '(' + val.slice(0,3) + ') ' + val.slice(3,6) + '-' + val.slice(6);
+else if (val.length >= 4) val = '(' + val.slice(0,3) + ') ' + val.slice(3);
+else if (val.length > 0) val = '(' + val;
+this.value = val;
+});
+
+async function handleSubmit() {
+const name = document.getElementById('name').value.trim();
+const phone = document.getElementById('phone').value.replace(/\D/g, '');
+const errorEl = document.getElementById('submit-error');
+errorEl.style.display = 'none';
+if (!name || phone.length < 10) {
+errorEl.textContent = 'Please enter a valid name and phone number.';
+errorEl.style.display = 'block';
+return;
+}
+const btn = document.getElementById('submit-btn');
+btn.disabled = true;
+btn.textContent = 'Sending...';
+try {
+const res = await fetch('https://lively-math-4da7.exelr8reviews.workers.dev/', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ phone: '+1' + phone, name: name }),
+});
+const data = await res.json();
+if (data.success) {
+document.getElementById('submit-section').style.display = 'none';
+document.getElementById('success-name').textContent = 'Review request sent to ' + name + '!';
+document.getElementById('success-section').style.display = 'block';
+} else {
+errorEl.textContent = 'Error: ' + (data.error || 'Please try again.');
+errorEl.style.display = 'block';
+btn.disabled = false;
+btn.textContent = 'Send Review Request';
+}
+} catch (err) {
+errorEl.style.display = 'block';
+btn.disabled = false;
+btn.textContent = 'Send Review Request';
+}
+}
+
+function handleAnother() {
+document.getElementById('name').value = '';
+document.getElementById('phone').value = '';
+document.getElementById('success-section').style.display = 'none';
+document.getElementById('submit-section').style.display = 'block';
+}
+</script>
+</body>
+</html>
